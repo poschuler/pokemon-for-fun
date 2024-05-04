@@ -9,9 +9,6 @@ installGlobals();
 export default defineConfig({
   plugins: [
     remix({
-      future: {
-        unstable_singleFetch: true,
-      },
       presets: [vercelPreset()],
     }),
     tsconfigPaths(),
