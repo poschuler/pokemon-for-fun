@@ -1,7 +1,9 @@
 import {
+  Form,
   useLoaderData,
   useNavigation,
   useSearchParams,
+  useSubmit,
 } from "@remix-run/react";
 import Layout from "~/components/layout";
 import {
@@ -14,8 +16,7 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Loader2, Search as LucideSearch } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounceCallback } from "usehooks-ts";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { PokemonListItemType, getPokemons } from "~/models/pokemons.server";
 import { z } from "zod";
@@ -48,20 +49,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Search() {
   let { pokemons, pageMeta } = useLoaderData() as LoaderData;
 
-  let [searchParams, setSearchParams] = useSearchParams();
-  let [query, setQuery] = useState(() => {
-    return searchParams.get("query") ?? "";
-  });
-  let [debouncedQuery] = useDebounceValue(query, 1000);
-  let navigation = useNavigation();
+  let [searchParams] = useSearchParams();
+  let submit = useSubmit();
+  let query = searchParams.get("q") ?? "";
 
-  useEffect(() => {
-    if (debouncedQuery.length === 0) {
-      setSearchParams({ page: searchParams.get("page") ?? "1" });
-      return;
-    }
-    setSearchParams({ q: debouncedQuery });
-  }, [debouncedQuery, setSearchParams, searchParams]);
+  let debouncedSubmit = useDebounceCallback(submit, 500);
+  let navigation = useNavigation();
+  let isPending = navigation.state === "loading";
 
   return (
     <Layout>
@@ -75,19 +69,21 @@ export default function Search() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
-              <div className="relative flex-1">
+              <Form
+                className="relative flex-1"
+                onChange={(event) => debouncedSubmit(event.currentTarget)}
+              >
                 <LucideSearch className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  id="query"
+                  name="q"
                   defaultValue={query}
                   placeholder="Search..."
                   className="w-full rounded-lg bg-background pl-8"
-                  onChange={(e) => setQuery(e.target.value)}
                 />
-                {navigation.state === "loading" && (
+                {isPending && (
                   <Loader2 className="absolute right-2.5 top-2 h-6 w-6 animate-spin text-muted-foreground" />
                 )}
-              </div>
+              </Form>
             </div>
           </CardContent>
         </Card>
