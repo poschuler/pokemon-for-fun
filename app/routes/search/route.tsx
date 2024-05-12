@@ -1,7 +1,9 @@
 import {
   Form,
+  useFetchers,
   useLoaderData,
   useNavigation,
+  useRevalidator,
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
@@ -55,7 +57,9 @@ export default function Search() {
 
   let debouncedSubmit = useDebounceCallback(submit, 500);
   let navigation = useNavigation();
-  let isPending = navigation.state === "loading";
+
+  //let isPending = navigation.state === "loading";
+  console.log(navigation.location?.search);
 
   return (
     <Layout>
@@ -71,7 +75,9 @@ export default function Search() {
             <div className="grid gap-4">
               <Form
                 className="relative flex-1"
-                onChange={(event) => debouncedSubmit(event.currentTarget)}
+                onChange={(event) => {
+                  debouncedSubmit(event.currentTarget);
+                }}
               >
                 <LucideSearch className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -80,9 +86,6 @@ export default function Search() {
                   placeholder="Search..."
                   className="w-full rounded-lg bg-background pl-8"
                 />
-                {isPending && (
-                  <Loader2 className="absolute right-2.5 top-2 h-6 w-6 animate-spin text-muted-foreground" />
-                )}
               </Form>
             </div>
           </CardContent>

@@ -1,12 +1,13 @@
-import { Form, useSearchParams } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import {
   Pagination,
+  PaginationButton,
   PaginationContent,
   PaginationEllipsis,
+  PaginationEllipsisForButton,
   PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+  PaginationNextButton,
+  PaginationPreviousButton,
 } from "~/components/ui/pagination";
 import { PageMeta } from "~/types/page.types";
 import { ExistingSearchParams } from "remix-utils/existing-search-params";
@@ -16,92 +17,87 @@ type ProductPaginationProps = {
 };
 
 export function PokemonPagination({ page }: ProductPaginationProps) {
-  let [, setSearchParams] = useSearchParams();
-
   return (
-    <>
+    <Form>
       <ExistingSearchParams exclude={["page"]} />
       <Pagination>
         <PaginationContent>
           {page.hasPreviousPage && (
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setSearchParams({ page: `${page.page - 1}` })}
-                className="cursor-pointer"
-              />
-            </PaginationItem>
+            <PaginationPreviousButton
+              value={`${page.page - 1}`}
+              name="page"
+              type="submit"
+            />
           )}
 
           {page.page > 10 && (
-            <PaginationItem className="hidden lg:inline">
-              <PaginationLink
-                onClick={() => setSearchParams({ page: `${page.page - 10}` })}
-                className="cursor-pointer"
-              >
-                {page.page - 10}
-              </PaginationLink>
-            </PaginationItem>
+            <PaginationButton
+              value={`${page.page - 10}`}
+              name="page"
+              className="hidden lg:inline"
+              type="submit"
+            >
+              {page.page - 10}
+            </PaginationButton>
           )}
 
           {page.page > 5 && (
-            <PaginationItem className="hidden lg:inline">
-              <PaginationEllipsis />
-            </PaginationItem>
+            <PaginationEllipsisForButton className="hidden lg:inline" />
           )}
 
           {page.page > 1 && (
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => setSearchParams({ page: `${page.page - 1}` })}
-                className="cursor-pointer"
-              >
-                {page.page - 1}
-              </PaginationLink>
-            </PaginationItem>
+            <PaginationButton
+              value={`${page.page - 1}`}
+              name="page"
+              type="submit"
+            >
+              {page.page - 1}
+            </PaginationButton>
           )}
 
-          <PaginationItem>
-            <PaginationLink isActive>{page.page}</PaginationLink>
-          </PaginationItem>
+          <PaginationButton
+            isActive
+            value={`${page.page}`}
+            name="page"
+            type="submit"
+          >
+            {page.page}
+          </PaginationButton>
 
           {page.page < page.pageCount && (
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => setSearchParams({ page: `${page.page + 1}` })}
-                className="cursor-pointer"
-              >
-                {page.page + 1}
-              </PaginationLink>
-            </PaginationItem>
+            <PaginationButton
+              value={`${page.page + 1}`}
+              name="page"
+              type="submit"
+            >
+              {page.page + 1}
+            </PaginationButton>
           )}
 
           {page.pageCount - page.page > 5 && (
-            <PaginationItem className="hidden lg:inline">
-              <PaginationEllipsis />
-            </PaginationItem>
+            <PaginationEllipsisForButton className="hidden lg:inline" />
           )}
 
           {page.page + 10 <= page.pageCount && (
-            <PaginationItem className="hidden lg:inline">
-              <PaginationLink
-                onClick={() => setSearchParams({ page: `${page.page + 10}` })}
-                className="cursor-pointer"
-              >
-                {page.page + 10}
-              </PaginationLink>
-            </PaginationItem>
+            <PaginationButton
+              value={`${page.page + 10}`}
+              name="page"
+              className="hidden lg:inline"
+              type="submit"
+            >
+              {page.page + 10}
+            </PaginationButton>
           )}
 
           {page.hasNextPage && (
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => setSearchParams({ page: `${page.page + 1}` })}
-                className="cursor-pointer"
-              />
-            </PaginationItem>
+            <PaginationNextButton
+              value={`${page.page + 1}`}
+              name="page"
+              type="submit"
+            />
           )}
         </PaginationContent>
       </Pagination>
-    </>
+    </Form>
   );
 }
