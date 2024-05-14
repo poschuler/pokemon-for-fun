@@ -53,6 +53,7 @@ export function PokemonPagination({ page }: ProductPaginationProps) {
             <PaginationItem>
               <PaginationLink
                 to={buildSearchParams("page", `${page.page - 1}`)}
+                prefetch={isDesktop ? "intent" : "viewport"}
               >
                 {page.page - 1}
               </PaginationLink>
@@ -62,6 +63,7 @@ export function PokemonPagination({ page }: ProductPaginationProps) {
             <PaginationLink
               isActive
               to={buildSearchParams("page", `${page.page}`)}
+              prefetch={isDesktop ? "intent" : "viewport"}
             >
               {page.page}
             </PaginationLink>
@@ -71,6 +73,7 @@ export function PokemonPagination({ page }: ProductPaginationProps) {
             <PaginationItem>
               <PaginationLink
                 to={buildSearchParams("page", `${page.page + 1}`)}
+                prefetch={isDesktop ? "intent" : "viewport"}
               >
                 {page.page + 1}
               </PaginationLink>
@@ -87,6 +90,7 @@ export function PokemonPagination({ page }: ProductPaginationProps) {
             <PaginationItem className="hidden lg:inline">
               <PaginationLink
                 to={buildSearchParams("page", `${page.page + 10}`)}
+                prefetch={isDesktop ? "intent" : "viewport"}
               >
                 {page.page + 10}
               </PaginationLink>
@@ -97,6 +101,7 @@ export function PokemonPagination({ page }: ProductPaginationProps) {
             <PaginationItem>
               <PaginationNext
                 to={buildSearchParams("page", `${page.page + 1}`)}
+                prefetch={isDesktop ? "intent" : "viewport"}
               />
             </PaginationItem>
           )}
