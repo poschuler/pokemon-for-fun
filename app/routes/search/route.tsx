@@ -1,9 +1,9 @@
 import {
   Form,
+  useFetcher,
   useFetchers,
   useLoaderData,
   useNavigation,
-  useRevalidator,
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
@@ -31,12 +31,12 @@ type LoaderData = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  let url = new URL(request.url);
-  let query = url.searchParams.get("q") ?? "";
-  let page = z.coerce.number().parse(url.searchParams.get("page") ?? 1);
-  let take = 40;
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q") ?? "";
+  const page = z.coerce.number().parse(url.searchParams.get("page") ?? 1);
+  const take = 40;
 
-  let { data: pokemons, meta } = await getPokemons({
+  const { data: pokemons, meta } = await getPokemons({
     page,
     take,
     q: query,
@@ -49,17 +49,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Search() {
-  let { pokemons, pageMeta } = useLoaderData() as LoaderData;
+  const { pokemons, pageMeta } = useLoaderData() as LoaderData;
+  const [searchParams] = useSearchParams();
+  const submit = useSubmit();
+  const query = searchParams.get("q") ?? "";
 
-  let [searchParams] = useSearchParams();
-  let submit = useSubmit();
-  let query = searchParams.get("q") ?? "";
-
-  let debouncedSubmit = useDebounceCallback(submit, 500);
-  let navigation = useNavigation();
-
-  //let isPending = navigation.state === "loading";
-  console.log(navigation.location?.search);
+  const debouncedSubmit = useDebounceCallback(submit, 500);
 
   return (
     <Layout>
@@ -86,6 +81,9 @@ export default function Search() {
                   placeholder="Search..."
                   className="w-full rounded-lg bg-background pl-8"
                 />
+                {/* {isPending && (
+                  <Loader2 className="absolute right-2.5 top-2 h-6 w-6 animate-spin text-muted-foreground" />
+                )} */}
               </Form>
             </div>
           </CardContent>

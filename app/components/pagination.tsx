@@ -1,103 +1,107 @@
-import { Form } from "@remix-run/react";
+import { PageMeta } from "~/types/page.types";
 import {
   Pagination,
-  PaginationButton,
   PaginationContent,
   PaginationEllipsis,
-  PaginationEllipsisForButton,
   PaginationItem,
-  PaginationNextButton,
-  PaginationPreviousButton,
-} from "~/components/ui/pagination";
-import { PageMeta } from "~/types/page.types";
-import { ExistingSearchParams } from "remix-utils/existing-search-params";
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "~/components/custom-ui/pagination";
+import { useMediaQuery } from "usehooks-ts";
+import { useBuildSearchParams } from "~/utils/misc";
 
 type ProductPaginationProps = {
   page: PageMeta;
 };
 
 export function PokemonPagination({ page }: ProductPaginationProps) {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const buildSearchParams = useBuildSearchParams();
+
   return (
-    <Form>
-      <ExistingSearchParams exclude={["page"]} />
+    <>
       <Pagination>
         <PaginationContent>
           {page.hasPreviousPage && (
-            <PaginationPreviousButton
-              value={`${page.page - 1}`}
-              name="page"
-              type="submit"
-            />
+            <PaginationItem>
+              <PaginationPrevious
+                to={buildSearchParams("page", `${page.page - 1}`)}
+                prefetch={isDesktop ? "intent" : "viewport"}
+              />
+            </PaginationItem>
           )}
 
           {page.page > 10 && (
-            <PaginationButton
-              value={`${page.page - 10}`}
-              name="page"
-              className="hidden lg:inline"
-              type="submit"
-            >
-              {page.page - 10}
-            </PaginationButton>
+            <PaginationItem className="hidden lg:inline">
+              <PaginationLink
+                to={buildSearchParams("page", `${page.page - 10}`)}
+                prefetch={isDesktop ? "intent" : "viewport"}
+              >
+                {page.page - 10}
+              </PaginationLink>
+            </PaginationItem>
           )}
 
           {page.page > 5 && (
-            <PaginationEllipsisForButton className="hidden lg:inline" />
+            <PaginationItem className="hidden lg:inline">
+              <PaginationEllipsis />
+            </PaginationItem>
           )}
 
           {page.page > 1 && (
-            <PaginationButton
-              value={`${page.page - 1}`}
-              name="page"
-              type="submit"
-            >
-              {page.page - 1}
-            </PaginationButton>
+            <PaginationItem>
+              <PaginationLink
+                to={buildSearchParams("page", `${page.page - 1}`)}
+              >
+                {page.page - 1}
+              </PaginationLink>
+            </PaginationItem>
           )}
-
-          <PaginationButton
-            isActive
-            value={`${page.page}`}
-            name="page"
-            type="submit"
-          >
-            {page.page}
-          </PaginationButton>
+          <PaginationItem>
+            <PaginationLink
+              isActive
+              to={buildSearchParams("page", `${page.page}`)}
+            >
+              {page.page}
+            </PaginationLink>
+          </PaginationItem>
 
           {page.page < page.pageCount && (
-            <PaginationButton
-              value={`${page.page + 1}`}
-              name="page"
-              type="submit"
-            >
-              {page.page + 1}
-            </PaginationButton>
+            <PaginationItem>
+              <PaginationLink
+                to={buildSearchParams("page", `${page.page + 1}`)}
+              >
+                {page.page + 1}
+              </PaginationLink>
+            </PaginationItem>
           )}
 
           {page.pageCount - page.page > 5 && (
-            <PaginationEllipsisForButton className="hidden lg:inline" />
+            <PaginationItem className="hidden lg:inline">
+              <PaginationEllipsis />
+            </PaginationItem>
           )}
 
           {page.page + 10 <= page.pageCount && (
-            <PaginationButton
-              value={`${page.page + 10}`}
-              name="page"
-              className="hidden lg:inline"
-              type="submit"
-            >
-              {page.page + 10}
-            </PaginationButton>
+            <PaginationItem className="hidden lg:inline">
+              <PaginationLink
+                to={buildSearchParams("page", `${page.page + 10}`)}
+              >
+                {page.page + 10}
+              </PaginationLink>
+            </PaginationItem>
           )}
 
           {page.hasNextPage && (
-            <PaginationNextButton
-              value={`${page.page + 1}`}
-              name="page"
-              type="submit"
-            />
+            <PaginationItem>
+              <PaginationNext
+                to={buildSearchParams("page", `${page.page + 1}`)}
+              />
+            </PaginationItem>
           )}
         </PaginationContent>
       </Pagination>
-    </Form>
+    </>
   );
 }

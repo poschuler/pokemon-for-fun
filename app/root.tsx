@@ -1,24 +1,19 @@
-import {
-  LinksFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
+import { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
+  useFetchers,
+  useNavigation,
 } from "@remix-run/react";
-import clsx from "clsx";
-import {
-  PreventFlashOnWrongTheme,
-  ThemeProvider,
-  useTheme,
-} from "remix-themes";
-import { themeSessionResolver } from "~/session.server";
+import { useEffect, useMemo } from "react";
 import stylesheet from "~/tailwind.css?url";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+NProgress.configure({ showSpinner: false, easing: "ease", speed: 500 });
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -33,6 +28,30 @@ export const meta: MetaFunction = () => {
 
 export default function AppWithProviders() {
   // const data = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const fetchers = useFetchers();
+
+  const state = useMemo<"idle" | "loading">(
+    function getGlobalState() {
+      const states = [
+        navigation.state,
+        ...fetchers.map((fetcher) => {
+          if (fetcher.key.startsWith("not-loading")) {
+            return "idle";
+          }
+          return fetcher.state;
+        }),
+      ];
+      if (states.every((state) => state === "idle")) return "idle";
+      return "loading";
+    },
+    [navigation.state, fetchers]
+  );
+
+  useEffect(() => {
+    if (state === "loading") NProgress.start();
+    if (state === "idle") NProgress.done();
+  }, [state]);
 
   return (
     // <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
